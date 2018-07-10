@@ -11,7 +11,7 @@ router.put('/:_id/transaction/insert', addTransaction);
 router.delete('/:_id/transaction/:trId/delete', deleteTransaction);
 router.put('/:_id/update', update);
 router.delete('/:_id/delete', _delete);
-router.get('/:_id/qrcode', qrcode);
+router.get('/:uid/qrcode', qrcode);
 router.get('/qrcode', qrcodes);
 
 module.exports = router;
@@ -68,7 +68,7 @@ function _delete(req, res) {
 }
 
 function qrcode(req, res) {
-  generateQRCode(req.params._id, "someuid")
+  QRCode.toDataURL('http://herens.nathan-ko.be/check/' + req.params.uid)
     .then(url => {
       res.send({url: url});
     })
