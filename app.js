@@ -29,7 +29,7 @@ app.use(expressJwt({
         }
         return null;
     }
-}).unless({ path: ['/users/authenticate', '/users/register', '/scout/qrcode'] }));
+}).unless({ path: ['/users/authenticate', '/users/register', '/scout/export'] }));
  
 // routes
 app.use('/users', require('./controllers/users.controller'));

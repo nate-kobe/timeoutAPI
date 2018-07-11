@@ -1,4 +1,5 @@
 var express = require('express');
+var csv = require('csv-express');
 var router = express.Router();
 var scoutService = require('services/scout.service');
 var QRCode = require('qrcode');
@@ -13,6 +14,7 @@ router.put('/:_id/update', update);
 router.delete('/:_id/delete', _delete);
 router.get('/:uid/qrcode', qrcode);
 router.get('/qrcode', qrcodes);
+router.get('/export', exportCSV);
 
 module.exports = router;
 
@@ -141,3 +143,41 @@ function check(req, res) {
     res.status(400).send(err);
   });
 }
+
+var mapToCSV = function(scout) {
+    return {
+        'NO_PERS_BDNJS': "",
+        'SEXE': scout.gender,
+        'NOM': scout.lastName,
+        'PRENOM': scout.firstName,
+        'DAT_NAISSANCE': scout.birthday.getUTCDate() + "." + (scout.birthday.getUTCMonth() + 1) + "." + scout.birthday.getUTCFullYear(),
+        'RUE': scout.address.street,
+        'NPA': scout.address.zip,
+        'LIEU': scout.address.city,
+        'PAYS': scout.address.country,
+        'NATIONALITE': scout.nationality,
+        '1ERE_LANGUE': scout.mothertongue,
+        'CLASSE/GROUPE': scout.troop + "B/Flambeaux Nyon"
+    };
+}
+function exportCSV(req, res) {
+  console.log('request CSV expor export');
+  scoutService.list().then({}, function(err, scouts) {
+      if(err) res.status(400).send(err)
+      var filename   = "flbx-nyon-camGgrp2018.csv";
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader("Content-Disposition", 'attachment; filename='+filename);
+      res.csv(scouts.map(s => mapToCSV(s)), true);
+  });
+}
+/* Export scout listing to CSV */
+/*router.get('/csv', function(req, res, next) {
+    console.log('request CSV expor export');
+    Scout.find().lean().exec({}, function(err, scouts) {
+        if(err) return next(err);
+        var filename   = "flbx-nyon-grp2018-inscriptions.csv";
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader("Content-Disposition", 'attachment; filename='+filename);
+        res.csv(scouts.map(s => mapToCSV(s)), true);
+    });
+});*/
