@@ -13,6 +13,7 @@ service.insert = insert;
 service.update = update;
 service.addTransaction = addTransaction;
 service.deleteTransaction = deleteTransaction;
+service.detailByUid = detailByUid;
  
 module.exports = service;
  
@@ -44,11 +45,22 @@ function detail(_id) {
 
 function detailByUid(uid) {
   var deferred = Q.defer();
+  console.log('service call');
   Scout.findOne({uid: uid}, function (err, scout) {
     if (err) deferred.reject(err.name + ': ' + err.message);
 
     if (scout) {
+        console.log('scout gound');
+        console.log(scout);
+        /*const newTransaction = {
+          reason: 'Checkin'
+        };
+        console.log(newTransaction);*/
         deferred.resolve(scout);
+        /*addTransaction(newTransaction).then(function(result) {
+          console.log('transaction added');
+          deferred.resolve('ok');
+        }).catch(function(err){res.status(400).send(err)});*/
     } else {
         deferred.resolve();
     }

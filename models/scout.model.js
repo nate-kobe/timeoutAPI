@@ -2,7 +2,8 @@ var mongoose = require('mongoose');
 
 var transactionSchema = new mongoose.Schema({
   reason: {type: String, required: true},
-  time: {type: Number, min: 1, max: 36000, required: true}
+  time: {type: Number, min: 1, max: 100000, required: true},
+  isPositive: {type: Boolean, default: true}
 }, {timestamps: true});
 
 var ScoutSchema = new mongoose.Schema({

@@ -3,6 +3,7 @@ var csv = require('csv-express');
 var router = express.Router();
 var scoutService = require('services/scout.service');
 var QRCode = require('qrcode');
+var Transaction = 
  
 // routes
 router.get('/list', list);
@@ -15,6 +16,7 @@ router.delete('/:_id/delete', _delete);
 router.get('/:uid/qrcode', qrcode);
 router.get('/qrcode', qrcodes);
 router.get('/export', exportCSV);
+router.get('/uid:uid/checkin', check);
 
 module.exports = router;
 
@@ -132,12 +134,21 @@ function generateQRCode(scoutId, herensId) {
 }
 
 function check(req, res) {
-  scoutService.detailByUid({uid: req.params.uid})
+  scoutService.detailByUid(req.params.uid)
   .then(function(result){
-    if(result.transactions.filter(tr => tr.time > 10000).length == 0)
-      console.log('coucou');
-
-    res.send(result);
+    // if(true) {
+      var newTranscation = {
+        reason: 'Checkin',
+        time: 82000,
+        isPositive: true
+      };
+      console.log(newTranscation);
+      scoutService.addTransaction(result._id, newTranscation).then(function(result) {
+        res.send(result);
+      }).catch(function(err){res.status(400).send(err)});
+    // } else {
+    //   res.send('not found');
+    // }
   })
   .catch(function(err){
     res.status(400).send(err);
